@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Expenses Chart</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Include Chart.js library -->
+    <style>
+        #second{
+            height:35vh; 
+            width:40vw;
+            margin-left: 300px;
+            display: inline;
+        }
+        #mycanvas {
+            width: 400px;
+            margin-left: 300px;
+            padding: 20px;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .sidenav {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: #98f290;
+            overflow-x: hidden;
+            padding-top: 120px;
+            padding-left: 15px;
+        }
+        .container a {
+            padding: 16px 8px 6px 16px;
+            text-decoration: none;
+            font-size: 20px;
+            color: #818181;
+            display: block;
+        }
+        .container img {
+            width: 200px;
+            height: 100px;
+            display: block;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidenav" id="mySidenav">
+            <img src="/images/logo.jpg" alt="Logo"/>
+            <a href="#" id="index"><p>Today's Expense <i class="fas fa-comments-dollar"></i></p></a>
+            <a href="#" id="daily-link"><p>Track Chart <i class="fas fa-chart-pie"></i></p></a>
+            <a href="#" id="calendar"><p>Calendar <i class="fas fa-calendar-alt"></i></p></a>
+        </div>
+        <canvas id="mycanvas"></canvas>
+        <canvas id="second"></canvas>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Assuming expenses data is available from server-side
+            const expenses = JSON.parse('<%- JSON.stringify(expenses) %>'); // Retrieve expenses data from server-side
+
+            // Extract names and amounts for chart labels and data
+            const labels = expenses.map(expense => expense.name);
+            const data = expenses.map(expense => expense.amount);
+
+            // Render pie chart using Chart.js
+            var ctx = document.getElementById('mycanvas').getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Expense',
+                        data: data,
+                        backgroundColor:[
+                            "#00aba9",
+                            "#2b5797",
+                            "#e8c3b9",
+                            "#1e7145",
+                            "#b91d47",
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: "Today's Expense"
+                        }
+                    },
+                    responsive: false,
+                }
+            });
+            var context=document.getElementById('second').getContext('2d');
+            var myChart = new Chart(context, {
+                type:'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Expense',
+                        data: data,
+                        backgroundColor:[
+                            "#00aba9",
+                            "#2b5797",
+                            "#e8c3b9",
+                            "#1e7145",
+                            "#b91d47",
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: "Today's Expense"
+                        }
+                    },
+                    responsive: false,
+                }
+            });
+
+
+            document.getElementById('index').addEventListener('click', () => {
+                window.location.href = '/';
+            });
+            document.getElementById('calendar').addEventListener('click', () => {
+                window.location.href = '/calendar';
+            });
+            // Fetch and render bar chart
+            fetchAndUpdateChart();
+        });
+
+        async function fetchExpenses() {
+            const response = await fetch('/api/compare-expense');
+            const data = await response.json();
+            return data;
+        }
+
+        function transformData(data) {
+            const labels = [];
+            const todayData = [];
+            const yesterdayData = [];
+
+            data.today.forEach(expense => {
+                labels.push(expense.name);
+                todayData.push(expense.amount);
+            });
+
+            data.yesterday.forEach(expense => {
+                if (!labels.includes(expense.name)) {
+                    labels.push(expense.name);
+                }
+                yesterdayData.push(expense.amount);
+            });
+
+            return {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Yesterday',
+                        data: yesterdayData,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Today',
+                        data: todayData,
+                        backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            };
+        }
+
+        async function fetchAndUpdateChart() {
+            const data = await fetchExpenses();
+            const chartData = transformData(data);
+
+            const ctx = document.getElementById('second').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: chartData,
+                options: {
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: "Compare your Expense"
+                        }
+                    },
+                    responsive: true,
+                }
+            });
+        }
+    </script>
+</body>
+</html>

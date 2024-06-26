@@ -1,0 +1,31 @@
+*{
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+.sidenav{
+	height: 100%;
+	width: 250px;
+	position: fixed;
+	z-index: 1;
+	top: 0;
+	left: 0;
+	background-color: #98f290;
+	overflow-x: hidden;
+	padding-top: 120px;
+	padding-left: 15px;
+}
+.container a{
+	padding: 16px 8px 6px 16px;
+	text-decoration: none;
+	font-size: 20px;
+	color: #818181;
+	display: block;
+}
+.container img{
+	width: 200px;
+	height: 100px;
+	display: block;
+	margin-bottom: 20px;
+}

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Check Today's Expense</title>
+    
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .sidenav{
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: #98f290;
+            overflow-x: hidden;
+            padding-top: 120px;
+            padding-left: 15px;
+        }
+        .container a{
+            padding: 16px 8px 6px 16px;
+            text-decoration: none;
+            font-size: 20px;
+            color: #818181;
+            display: block;
+        }
+        .container img{
+            width: 200px;
+            height: 100px;
+            display: block;
+            margin-bottom: 20px;
+        }
+        .inputarea{
+            margin-left: 300px;
+            padding: 90px;
+        }
+        .inputarea p{
+            font-size: 28px;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            color: rgb(135, 130, 24);
+        }
+        .inputarea #date
+        {
+            width:60px;
+        }
+        .inputarea input, .inputarea select  {
+            display: inline;
+            width: 100%;
+            max-width: 300px;
+            margin-bottom: 10px;
+            margin-top: 50px;
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #6c6e30;
+            border-radius: 10px;
+        }
+        .expense-list{
+            margin-left: 300px;
+            width: 35%;
+            padding: 15px;
+            background-color: rgb(190, 244, 226);
+            border: 2px solid #6c6e30;
+            border-radius: 10px;
+        }
+        #expense{
+            list-style-type: none;
+            padding: 0;
+        }
+        #expense li{
+            background-color: #f9f9f9;
+            margin-top: 10px;
+            margin-left: 10px;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        #add{
+            margin-left:200px;
+        }
+        button{
+            margin: 5px;
+            padding: 15px;
+            background-color: blanchedalmond;
+            border: 2px solid black;
+            border-radius: 10px;
+            
+        }
+        .outputTotal {
+            margin-left: 300px;
+            margin-top:10px;
+            padding: 15px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidenav" id="mySidenav">
+            <img src="/images/logo.jpg" alt="Logo"/>
+            <a href="#" id="indexPage"><p>Today's Expense <i class="fas fa-comments-dollar"></i></p></a>
+            <a href="#" id="daily-link"><p>Track Chart <i class="fas fa-chart-pie"></i></p></a>
+            <a href="#" id="calendar"><p>Calendar <i class="fas fa-calendar-alt"></i></p></a>
+        </div>
+        <div class="inputarea">
+            <p>Enter spend item name and spend amount</p>
+            <input type="date" id="date" placeholder="Today">
+            <input type="text" id="item-name" placeholder="Enter Item name">
+            <input type="number" id="item-amount" placeholder="Enter Amount">
+            <select id="currency">
+                <option value="" disabled selected>Select Currency</option>
+                <option value="usd">USD - US Dollar</option>
+                <option value="eur">EUR - Euro</option>
+                <option value="gbp">GBP - British Pound</option>
+                <option value="inr">INR - Indian Rupee</option>
+                <option value="jpy">JPY - Japanese Yen</option>
+                <option value="aud">AUD - Australian Dollar</option>
+                <option value="cad">CAD - Canadian Dollar</option>
+                <option value="chf">CHF - Swiss Franc</option>
+                <option value="cny">CNY - Chinese Yuan</option>
+                <option value="rub">RUB - Russian Ruble</option>
+            </select>
+            <button id="add"> Add Expense</button>
+            <button id="chart-link"> Daily charts</button>
+            <button id="AddtoCalendar"> Add to calendar</button>
+        </div>
+        <div class="outputTotal">
+            <h4>Total: <span id="totalAmount">0</span> USD</h4>
+        </div>
+        <div class="expense-list">
+            <h2>Expense List</h2>
+            <ul id="expense"></ul>
+        </div>
+    </div>
+    <script>
+          let totalAmount = 0;
+
+document.getElementById('add').addEventListener('click', () => {
+    const itemnm = document.getElementById('item-name').value;
+    const itemAmount = parseFloat(document.getElementById('item-amount').value);
+    const currency = document.getElementById('currency').value;
+    const date=document.getElementById('date').value;
+
+    if (itemAmount && itemnm && currency) {
+        const expense = {
+            name: itemnm,
+            amount: itemAmount,
+            currency: currency,
+            date:new Date(date)
+        };
+
+        const expenseList = document.getElementById('expense');
+        const li = document.createElement('li');
+        li.textContent = `Name: ${expense.name}, Amount: ${expense.amount} ${expense.currency.toUpperCase()}`;
+        expenseList.appendChild(li);
+
+        // Add to total amount
+        totalAmount += itemAmount;
+        document.getElementById('totalAmount').textContent = totalAmount.toFixed(2);
+
+        // Clear input fields after adding the expense
+        document.getElementById('item-name').value = '';
+        document.getElementById('item-amount').value = '';
+        document.getElementById('currency').value = '';
+    }
+});
+
+document.getElementById('daily-link').addEventListener('click', () => {
+    window.location.href = '/track-daily';
+});
+document.getElementById('chart-link').addEventListener('click', () => {
+    window.location.href = '/track-daily';
+});
+document.getElementById('AddtoCalendar').addEventListener('click', () => {
+    const itemnm = document.getElementById('item-name').value;
+    const itemAmount = parseFloat(document.getElementById('item-amount').value);
+    const currency = document.getElementById('currency').value;
+    
+    if (itemAmount && itemnm && currency) {
+        const expense = {
+            name: itemnm,
+            amount: itemAmount,
+            currency: currency,
+            addToCalendar: true
+        };
+
+        fetch('/add-expense', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(expense)
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.text();
+            }
+            throw new Error('Network response was not ok.');
+        })
+        .then(data => {
+            console.log(data);
+            alert('Expense added successfully');
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+            alert('Error adding expense');
+        });
+    } else {
+        alert('Please fill out all fields');
+    }
+});
+document.getElementById('calendar').addEventListener('click', () => {
+                window.location.href = '/calendar';
+            });
+      </script>
+</body>
+</html>

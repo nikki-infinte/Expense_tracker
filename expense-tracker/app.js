@@ -23,9 +23,10 @@ const expenseSchema = new mongoose.Schema({
     name: String,
     amount: Number,
    currency: String,
-    addToCalendar: { type: Boolean, default: false },
+    addToCalendar: { type: Boolean, default: true },
     date: { type: Date, default: Date.now }
 });
+
 const Expense = mongoose.model('Expense', expenseSchema);
 
 db.on('error', (err) => {
@@ -66,6 +67,12 @@ app.get("/expenses/:date", async (req, res) => {
         res.status(500).send('Error fetching expenses');
     }
 });
+
+//create an API which will send me data from database of particular  date 
+
+app.get("/expense")
+
+
 
 // Route to aggregate expenses per day
 app.get("/expenses-aggregate", async (req, res) => {

@@ -5,102 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <title>Check Today's Expense</title>
-    
-    <style>
-        *{
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        .sidenav{
-            height: 100%;
-            width: 250px;
-            position: fixed;
-            z-index: 1;
-            top: 0;
-            left: 0;
-            background-color: #98f290;
-            overflow-x: hidden;
-            padding-top: 120px;
-            padding-left: 15px;
-        }
-        .container a{
-            padding: 16px 8px 6px 16px;
-            text-decoration: none;
-            font-size: 20px;
-            color: #818181;
-            display: block;
-        }
-        .container img{
-            width: 200px;
-            height: 100px;
-            display: block;
-            margin-bottom: 20px;
-        }
-        .inputarea{
-            margin-left: 300px;
-            padding: 90px;
-        }
-        .inputarea p{
-            font-size: 28px;
-            font-family: Verdana, Geneva, Tahoma, sans-serif;
-            color: rgb(135, 130, 24);
-        }
-        .inputarea #date
-        {
-            width:60px;
-        }
-        .inputarea input, .inputarea select  {
-            display: inline;
-            width: 100%;
-            max-width: 300px;
-            margin-bottom: 10px;
-            margin-top: 50px;
-            padding: 10px;
-            font-size: 16px;
-            border: 2px solid #6c6e30;
-            border-radius: 10px;
-        }
-        .expense-list{
-            margin-left: 300px;
-            width: 35%;
-            padding: 15px;
-            background-color: rgb(190, 244, 226);
-            border: 2px solid #6c6e30;
-            border-radius: 10px;
-        }
-        #expense{
-            list-style-type: none;
-            padding: 0;
-        }
-        #expense li{
-            background-color: #f9f9f9;
-            margin-top: 10px;
-            margin-left: 10px;
-            padding: 5px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-        #add{
-            margin-left:200px;
-        }
-        button{
-            margin: 5px;
-            padding: 15px;
-            background-color: blanchedalmond;
-            border: 2px solid black;
-            border-radius: 10px;
-            
-        }
-        .outputTotal {
-            margin-left: 300px;
-            margin-top:10px;
-            padding: 15px;
-            font-size: 24px;
-            font-weight: bold;
-        }
-    </style>
+    <link rel="stylesheet" href="/stylesheets/indexstyle.css">
 </head>
 <body>
     <div class="container">
@@ -112,7 +17,7 @@
         </div>
         <div class="inputarea">
             <p>Enter spend item name and spend amount</p>
-            <input type="date" id="date" placeholder="Today">
+            <input type="date" id="date" placeholder="Today" >
             <input type="text" id="item-name" placeholder="Enter Item name">
             <input type="number" id="item-amount" placeholder="Enter Amount">
             <select id="currency">
@@ -220,6 +125,11 @@ document.getElementById('AddtoCalendar').addEventListener('click', () => {
 document.getElementById('calendar').addEventListener('click', () => {
                 window.location.href = '/calendar';
             });
+
+            document.getElementById('date').addEventListener('click',(event)=>{
+                //get expense of registered date from server by api 
+                
+            })
       </script>
 </body>
 </html>

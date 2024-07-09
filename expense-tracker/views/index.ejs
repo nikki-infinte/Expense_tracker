@@ -46,90 +46,127 @@
         </div>
     </div>
     <script>
-          let totalAmount = 0;
+        let totalAmount = 0;
 
-document.getElementById('add').addEventListener('click', () => {
-    const itemnm = document.getElementById('item-name').value;
-    const itemAmount = parseFloat(document.getElementById('item-amount').value);
-    const currency = document.getElementById('currency').value;
-    const date=document.getElementById('date').value;
+        document.getElementById('add').addEventListener('click', () => {
+            const itemnm = document.getElementById('item-name').value;
+            const itemAmount = parseFloat(document.getElementById('item-amount').value);
+            const currency = document.getElementById('currency').value;
+            const date = document.getElementById('date').value;
 
-    if (itemAmount && itemnm && currency) {
-        const expense = {
-            name: itemnm,
-            amount: itemAmount,
-            currency: currency,
-            date:new Date(date)
-        };
+            if (itemAmount && itemnm && currency) {
+                const expense = {
+                    name: itemnm,
+                    amount: itemAmount,
+                    currency: currency,
+                    date: new Date(date)
+                };
 
-        const expenseList = document.getElementById('expense');
-        const li = document.createElement('li');
-        li.textContent = `Name: ${expense.name}, Amount: ${expense.amount} ${expense.currency.toUpperCase()}`;
-        expenseList.appendChild(li);
-
-        // Add to total amount
-        totalAmount += itemAmount;
-        document.getElementById('totalAmount').textContent = totalAmount.toFixed(2);
-
-        // Clear input fields after adding the expense
-        document.getElementById('item-name').value = '';
-        document.getElementById('item-amount').value = '';
-        document.getElementById('currency').value = '';
-    }
-});
-
-document.getElementById('daily-link').addEventListener('click', () => {
-    window.location.href = '/track-daily';
-});
-document.getElementById('chart-link').addEventListener('click', () => {
-    window.location.href = '/track-daily';
-});
-document.getElementById('AddtoCalendar').addEventListener('click', () => {
-    const itemnm = document.getElementById('item-name').value;
-    const itemAmount = parseFloat(document.getElementById('item-amount').value);
-    const currency = document.getElementById('currency').value;
-    
-    if (itemAmount && itemnm && currency) {
-        const expense = {
-            name: itemnm,
-            amount: itemAmount,
-            currency: currency,
-            addToCalendar: true
-        };
-
-        fetch('/add-expense', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(expense)
-        })
-        .then(response => {
-            if (response.ok) {
-                return response.text();
+                fetch(`/expenses/${date}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(expense)
+                }).then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                    throw new Error('Network response was not ok.');
+                })
+                .then(data => {
+                    const expenseList = document.getElementById('expense');
+                    expenseList.innerHTML = '';
+                    totalAmount = 0;
+                    data.forEach(exp => {
+                        const li = document.createElement('li');
+                        li.textContent = `Name: ${exp.name}, Amount: ${exp.amount} ${exp.currency.toUpperCase()}`;
+                        expenseList.appendChild(li);
+                        totalAmount += exp.amount;
+                    });
+                    document.getElementById('totalAmount').textContent = totalAmount.toFixed(2);
+                    alert('Expense added and list updated successfully');
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                    alert('Error adding expense');
+                });
             }
-            throw new Error('Network response was not ok.');
-        })
-        .then(data => {
-            console.log(data);
-            alert('Expense added successfully');
-        })
-        .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
-            alert('Error adding expense');
         });
-    } else {
-        alert('Please fill out all fields');
-    }
-});
-document.getElementById('calendar').addEventListener('click', () => {
-                window.location.href = '/calendar';
-            });
 
-            document.getElementById('date').addEventListener('click',(event)=>{
-                //get expense of registered date from server by api 
-                
-            })
-      </script>
+        document.getElementById('date').addEventListener('change', () => {
+            const date = document.getElementById('date').value;
+            fetch(`/expenses/${date}`)
+                .then(response => response.json())
+                .then(data => {
+                    const expenseList = document.getElementById('expense');
+                    expenseList.innerHTML = '';
+                    totalAmount = 0;
+                    data.forEach(exp => {
+                        const li = document.createElement('li');
+                        li.textContent = `Name: ${exp.name}, Amount: ${exp.amount} ${exp.currency.toUpperCase()}`;
+                        expenseList.appendChild(li);
+                        totalAmount += exp.amount;
+                    });
+                    document.getElementById('totalAmount').textContent = totalAmount.toFixed(2);
+                })
+                .catch(error => console.error('Error fetching expenses:', error));
+        });
+
+        document.getElementById('daily-link').addEventListener('click', () => {
+            const date = document.getElementById('date').value;
+            window.location.href = `/track-daily?date=${date}`;
+        });
+
+        document.getElementById('chart-link').addEventListener('click', () => {
+            const date = document.getElementById('date').value;
+            window.location.href = `/track-daily?date=${date}`;
+        });
+
+        document.getElementById('AddtoCalendar').addEventListener('click', () => {
+            const itemnm = document.getElementById('item-name').value;
+            const itemAmount = parseFloat(document.getElementById('item-amount').value);
+            const currency = document.getElementById('currency').value;
+            const date = document.getElementById('date').value;
+
+            if (itemAmount && itemnm && currency) {
+                const expense = {
+                    name: itemnm,
+                    amount: itemAmount,
+                    currency: currency,
+                    addToCalendar: true,
+                    date: date
+                };
+
+                fetch('/add-expense', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(expense)
+                })
+                .then(response => {
+                    if (response.ok) {
+                        return response.text();
+                    }
+                    throw new Error('Network response was not ok.');
+                })
+                .then(data => {
+                    console.log(data);
+                    alert('Expense added successfully');
+                })
+                .catch(error => {
+                    console.error('There was a problem with the fetch operation:', error);
+                    alert('Error adding expense');
+                });
+            } else {
+                alert('Please fill out all fields');
+            }
+        });
+
+        document.getElementById('calendar').addEventListener('click', () => {
+            window.location.href = '/calendar';
+        });
+    </script>
 </body>
 </html>
